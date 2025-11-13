@@ -1,9 +1,13 @@
 import { Hono } from "hono";
 import { domainsRouter } from "./domains";
+import { productsRouter } from "./products";
+import videoController from "../controllers/videoController";
 
 const apiRouter = new Hono();
 
-// Mount domain routes
+// Mount routes
 apiRouter.route("/domains", domainsRouter);
+apiRouter.route("/products", productsRouter);
+apiRouter.route("/videos", videoController);
 
 export { apiRouter };

@@ -8,6 +8,20 @@
       "when": 1763012225898,
       "tag": "0000_previous_xavin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1763018593411,
+      "tag": "0001_perfect_shard",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1763041810055,
+      "tag": "0002_shallow_arclight",
+      "breakpoints": true
     }
   ]
 }
