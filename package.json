@@ -1,0 +1,56 @@
+{
+  "name": "hello-world-react",
+  "version": "1.0.0",
+  "description": "A Hello World React app built with Bun",
+  "main": "src/index.tsx",
+  "scripts": {
+    "dev": "bun --bun vite",
+    "dev:server": "bun run --hot server/server.ts",
+    "dev:full": "concurrently \"bun run dev:server\" \"bun run dev\"",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "build": "bun --bun vite build",
+    "preview": "bun --bun vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "react",
+    "bun",
+    "typescript",
+    "hello-world"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.19.6",
+    "@libsql/client": "^0.15.15",
+    "@tanstack/react-query": "^5.90.8",
+    "@tanstack/react-query-devtools": "^5.90.2",
+    "drizzle-kit": "^0.31.6",
+    "drizzle-orm": "^0.44.7",
+    "drizzle-zod": "^0.8.3",
+    "hono": "^4.10.5",
+    "lucide-react": "^0.553.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.9.5",
+    "tailwindcss": "^4.1.17",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.22",
+    "concurrently": "^9.2.1",
+    "postcss": "^8.5.6",
+    "typescript": "^5.0.0",
+    "vite": "^7.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
