@@ -149,10 +149,7 @@ export class KlingAiService {
     const base64Image = await this.imageUrlToBase64(imageUrl);
 
     // Generate an appropriate prompt for the product
-    const prompt = this.generatePromptFromProduct(
-      productTitle,
-      productDescription
-    );
+    const prompt = this.getPrompt();
 
     const request: KlingVideoRequest = {
       model_name: "kling-v2-5-turbo",
@@ -169,10 +166,7 @@ export class KlingAiService {
   /**
    * Generate a prompt from product information
    */
-  private generatePromptFromProduct(
-    title: string,
-    description: string
-  ): string {
+  private getPrompt(): string {
     return `The subject should remain realistic and detailed — keep all text, logos, and labels perfectly clear and unchanged.Use creative but realistic motion, such as:A subtle parallax effect, as if the camera gently moves around the product (without showing unseen sides). Soft dynamic lighting, like a slow light sweep across the surface to highlight gloss and texture.Shallow depth of field, with a slight focus shift from top to bottom or front to back. Avoid any rotation or label distortion. Keep the camera motion cinematic, not static zoom.`;
   }
 }

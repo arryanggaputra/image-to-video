@@ -81,155 +81,162 @@ function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      {/* Product Image */}
-      {product.images && product.images.length > 0 && (
-        <div className="aspect-w-16 aspect-h-12 bg-gray-100 relative">
-          <img
-            src={product.images[0]}
-            alt={product.title}
-            className="w-full h-48 object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-              target.nextElementSibling?.classList.remove("hidden");
-            }}
-          />
-          {/* Fallback for broken images */}
-          <div className="hidden w-full h-48 bg-gray-100 items-center justify-center">
-            <Image className="w-12 h-12 text-gray-400" />
-          </div>
+      <div className="flex">
+        {/* Product Image - Left Side */}
+        {product.images && product.images.length > 0 && (
+          <div className="w-48 h-48 bg-gray-100 relative flex items-center justify-center shrink-0">
+            <img
+              src={product.images[0]}
+              alt={product.title}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+                target.nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+            {/* Fallback for broken images */}
+            <div className="hidden w-full h-full bg-gray-100 items-center justify-center">
+              <Image className="w-12 h-12 text-gray-400" />
+            </div>
 
-          {/* Video Status Overlay */}
-          {(currentVideoStatus !== "unavailable" || showVideoStatus) && (
-            <div className="absolute top-2 right-2">
-              <div
-                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${getVideoStatusColor(
-                  currentVideoStatus
-                )}`}
-              >
-                {getVideoStatusIcon(currentVideoStatus)}
-                <span className="capitalize">
-                  {currentVideoStatus === "finish"
-                    ? "Video Ready"
-                    : currentVideoStatus}
+            {/* Video Status Overlay */}
+            {(currentVideoStatus !== "unavailable" || showVideoStatus) && (
+              <div className="absolute top-2 right-2">
+                <div
+                  className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${getVideoStatusColor(
+                    currentVideoStatus
+                  )}`}
+                >
+                  {getVideoStatusIcon(currentVideoStatus)}
+                  <span className="capitalize">
+                    {currentVideoStatus === "finish"
+                      ? "Video Ready"
+                      : currentVideoStatus}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Product Info - Right Side */}
+        <div className="flex-1 p-4 flex flex-col justify-between">
+          <div>
+            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+              {product.title}
+            </h3>
+            <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+              {product.description}
+            </p>
+
+            {/* Additional Images */}
+            {product.images.length > 1 && (
+              <div className="flex gap-1 mb-3 overflow-x-auto">
+                {product.images.slice(1, 4).map((image, index) => (
+                  <div
+                    key={index}
+                    className="w-12 h-12 bg-gray-50 rounded border shrink-0 flex items-center justify-center overflow-hidden"
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.title} ${index + 2}`}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                ))}
+                {product.images.length > 4 && (
+                  <div className="w-12 h-12 bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-500 shrink-0">
+                    +{product.images.length - 4}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Video Section */}
+            <div className="mb-3 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  {getVideoStatusIcon(currentVideoStatus)}
+                  <span className="text-sm font-medium">Video Status</span>
+                </div>
+                <span className="text-xs text-gray-500 capitalize">
+                  {currentVideoStatus}
                 </span>
               </div>
-            </div>
-          )}
-        </div>
-      )}
 
-      {/* Product Info */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-          {product.title}
-        </h3>
-        <p className="text-sm text-gray-600 mb-3 line-clamp-3">
-          {product.description}
-        </p>
-
-        {/* Additional Images */}
-        {product.images.length > 1 && (
-          <div className="flex gap-1 mb-3 overflow-x-auto">
-            {product.images.slice(1, 4).map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`${product.title} ${index + 2}`}
-                className="w-12 h-12 object-cover rounded border shrink-0"
-              />
-            ))}
-            {product.images.length > 4 && (
-              <div className="w-12 h-12 bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-500 shrink-0">
-                +{product.images.length - 4}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Video Section */}
-        {(currentVideoStatus !== "unavailable" || showVideoStatus) && (
-          <div className="mb-3 p-3 bg-gray-50 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                {getVideoStatusIcon(currentVideoStatus)}
-                <span className="text-sm font-medium">Video Status</span>
-              </div>
-              <span className="text-xs text-gray-500 capitalize">
-                {currentVideoStatus}
-              </span>
-            </div>
-
-            {statusLoading && (
-              <p className="text-xs text-gray-500">Checking status...</p>
-            )}
-
-            {currentVideoStatus === "finish" && currentVideoUrl && (
+              {/* Tombol utama dinamis */}
               <div className="mt-2">
-                <a
-                  href={currentVideoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
-                >
-                  <Play className="w-4 h-4" />
-                  Watch Video
-                </a>
-              </div>
-            )}
-
-            {currentVideoStatus === "error" && (
-              <div className="mt-2">
-                <p className="text-xs text-red-600 mb-2">
-                  Video generation failed
-                </p>
-                <button
-                  onClick={handleGenerateVideo}
-                  disabled={generateVideoMutation.isPending}
-                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm font-medium"
-                >
-                  {generateVideoMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Video className="w-4 h-4" />
-                  )}
-                  Retry Generate
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <span className="text-xs text-gray-500">
-            {formatTime(product.createdAt)}
-          </span>
-
-          <div className="flex items-center gap-2">
-            {/* Generate Video Button */}
-            {currentVideoStatus === "unavailable" && !showVideoStatus && (
-              <button
-                onClick={handleGenerateVideo}
-                disabled={generateVideoMutation.isPending}
-                className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-xs font-medium"
-                title="Generate AI Video"
-              >
-                {generateVideoMutation.isPending ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : (
-                  <Video className="w-3 h-3" />
+                {currentVideoStatus === "finish" && currentVideoUrl && (
+                  <a
+                    href={currentVideoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                  >
+                    <Play className="w-4 h-4" />
+                    Watch Video
+                  </a>
                 )}
-                Generate Video
-              </button>
-            )}
 
-            {/* View Product Link */}
+                {currentVideoStatus === "processing" && (
+                  <button
+                    disabled
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium"
+                  >
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generating Video...
+                  </button>
+                )}
+
+                {currentVideoStatus === "error" && (
+                  <button
+                    onClick={handleGenerateVideo}
+                    disabled={generateVideoMutation.isPending}
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-medium"
+                  >
+                    {generateVideoMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Video className="w-4 h-4" />
+                    )}
+                    Retry Generate
+                  </button>
+                )}
+
+                {(currentVideoStatus === "unavailable" ||
+                  !currentVideoStatus) && (
+                  <button
+                    onClick={handleGenerateVideo}
+                    disabled={generateVideoMutation.isPending}
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors text-sm font-medium"
+                  >
+                    {generateVideoMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Video className="w-4 h-4" />
+                    )}
+                    Generate Video
+                  </button>
+                )}
+              </div>
+
+              {statusLoading && (
+                <p className="text-xs text-gray-500 mt-2">Checking status...</p>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+            <span className="text-xs text-gray-500">
+              {formatTime(product.createdAt)}
+            </span>
             <a
               href={product.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
             >
               <ExternalLink className="w-3 h-3" />
               View
