@@ -48,6 +48,13 @@ export const products = sqliteTable("products", {
     .default("unavailable"),
   videoUrl: text("video_url"), // Generated video URL
   videoTaskId: text("video_task_id"), // Kling AI task ID for tracking
+  dailymotionId: text("dailymotion_id"), // Dailymotion video ID
+  dailymotionStatus: text("dailymotion_status", {
+    enum: ["not_published", "publishing", "published", "error"],
+  })
+    .notNull()
+    .default("not_published"),
+  dailymotionUrl: text("dailymotion_url"), // Dailymotion video URL
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -70,6 +77,15 @@ export const insertProductSchema = createInsertSchema(products, {
     .optional(),
   videoUrl: z.string().url("Invalid video URL").optional().nullable(),
   videoTaskId: z.string().optional().nullable(),
+  dailymotionId: z.string().optional().nullable(),
+  dailymotionStatus: z
+    .enum(["not_published", "publishing", "published", "error"])
+    .optional(),
+  dailymotionUrl: z
+    .string()
+    .url("Invalid Dailymotion URL")
+    .optional()
+    .nullable(),
 });
 
 export const selectProductSchema = createSelectSchema(products);

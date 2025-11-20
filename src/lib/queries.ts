@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient, type Domain, type NewDomain } from "./api";
+import { apiClient, type NewDomain } from "./api";
 
 // Query keys
 export const queryKeys = {
@@ -8,6 +8,7 @@ export const queryKeys = {
   products: ["products"] as const,
   product: (id: number) => ["products", id] as const,
   productVideo: (id: number) => ["products", id, "video"] as const,
+  productDailymotion: (id: number) => ["products", id, "dailymotion"] as const,
 };
 
 // Queries
@@ -112,6 +113,47 @@ export function useDeleteProductMutation() {
         queryKey: ["domain-with-products"],
         exact: false,
       });
+    },
+  });
+}
+
+// Dailymotion publishing mutations
+export function usePublishToDailymotionMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (productId: number) =>
+      apiClient.publishToDailymotion(productId),
+    onSuccess: (_, productId) => {
+      // Invalidate product Dailymotion status
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.productDailymotion(productId),
+      });
+      // Invalidate products list to update status
+      queryClient.invalidateQueries({ queryKey: queryKeys.products });
+      // Invalidate domain-with-products queries
+      queryClient.invalidateQueries({
+        queryKey: ["domain-with-products"],
+        exact: false,
+      });
+    },
+  });
+}
+
+export function useDailymotionStatusQuery(
+  productId: number,
+  enabled: boolean = true
+) {
+  return useQuery({
+    queryKey: queryKeys.productDailymotion(productId),
+    queryFn: () => apiClient.getDailymotionStatus(productId),
+    enabled: enabled && !!productId,
+    refetchInterval: (data) => {
+      // Auto-refresh every 10 seconds if publishing
+      if (data?.state?.data?.dailymotionStatus === "publishing") {
+        return 10000;
+      }
+      return false;
     },
   });
 }

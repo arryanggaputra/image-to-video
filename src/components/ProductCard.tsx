@@ -8,12 +8,15 @@ import {
   CheckCircle,
   XCircle,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { Product } from "../lib/api";
 import {
   useGenerateVideoMutation,
   useVideoStatusQuery,
   useDeleteProductMutation,
+  usePublishToDailymotionMutation,
+  useDailymotionStatusQuery,
 } from "../lib/queries";
 
 interface ProductCardProps {
@@ -23,15 +26,24 @@ interface ProductCardProps {
 function ProductCard({ product }: ProductCardProps) {
   const [showVideoStatus, setShowVideoStatus] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDailymotionStatus, setShowDailymotionStatus] = useState(false);
 
   const generateVideoMutation = useGenerateVideoMutation();
   const deleteProductMutation = useDeleteProductMutation();
+  const publishToDailymotionMutation = usePublishToDailymotionMutation();
 
   // Only query video status if we're showing it or if video is processing
   const { data: videoStatus, isLoading: statusLoading } = useVideoStatusQuery(
     product.id,
     showVideoStatus || product.videoStatus === "processing"
   );
+
+  // Query Dailymotion status if needed
+  const { data: dailymotionStatus, isLoading: dailymotionStatusLoading } =
+    useDailymotionStatusQuery(
+      product.id,
+      showDailymotionStatus || product.dailymotionStatus === "publishing"
+    );
 
   const formatTime = (date: Date | string) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -65,6 +77,15 @@ function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const handlePublishToDailymotion = async () => {
+    try {
+      await publishToDailymotionMutation.mutateAsync(product.id);
+      setShowDailymotionStatus(true);
+    } catch (error) {
+      console.error("Failed to publish to Dailymotion:", error);
+    }
+  };
+
   const getVideoStatusIcon = (status: string) => {
     switch (status) {
       case "processing":
@@ -91,9 +112,26 @@ function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const getDailymotionStatusIcon = (status: string) => {
+    switch (status) {
+      case "publishing":
+        return <Loader2 className="w-4 h-4 animate-spin" />;
+      case "published":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case "error":
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      default:
+        return <Upload className="w-4 h-4" />;
+    }
+  };
+
   // Use the most recent status (from query or product data)
   const currentVideoStatus = videoStatus?.videoStatus || product.videoStatus;
   const currentVideoUrl = videoStatus?.videoUrl || product.videoUrl;
+  const currentDailymotionStatus =
+    dailymotionStatus?.dailymotionStatus || product.dailymotionStatus;
+  const currentDailymotionUrl =
+    dailymotionStatus?.dailymotionUrl || product.dailymotionUrl;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
@@ -239,6 +277,93 @@ function ProductCard({ product }: ProductCardProps) {
 
               {statusLoading && (
                 <p className="text-xs text-gray-500 mt-2">Checking status...</p>
+              )}
+            </div>
+
+            {/* Dailymotion Section */}
+            <div className="mb-3 p-3 bg-orange-50 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  {getDailymotionStatusIcon(currentDailymotionStatus)}
+                  <span className="text-sm font-medium">
+                    Dailymotion Status
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500 capitalize">
+                  {currentDailymotionStatus.replace("_", " ")}
+                </span>
+              </div>
+
+              <div className="mt-2">
+                {currentDailymotionStatus === "published" &&
+                  currentDailymotionUrl && (
+                    <a
+                      href={currentDailymotionUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+                    >
+                      <Play className="w-4 h-4" />
+                      Watch on Dailymotion
+                    </a>
+                  )}
+
+                {currentDailymotionStatus === "publishing" && (
+                  <button
+                    disabled
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium"
+                  >
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Publishing to Dailymotion...
+                  </button>
+                )}
+
+                {currentDailymotionStatus === "error" && (
+                  <button
+                    onClick={handlePublishToDailymotion}
+                    disabled={
+                      publishToDailymotionMutation.isPending ||
+                      currentVideoStatus !== "finish"
+                    }
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-medium"
+                  >
+                    {publishToDailymotionMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    Retry Publish
+                  </button>
+                )}
+
+                {currentDailymotionStatus === "not_published" && (
+                  <button
+                    onClick={handlePublishToDailymotion}
+                    disabled={
+                      publishToDailymotionMutation.isPending ||
+                      currentVideoStatus !== "finish"
+                    }
+                    className="flex w-full items-center justify-center gap-2 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-colors text-sm font-medium"
+                    title={
+                      currentVideoStatus !== "finish"
+                        ? "Generate video first"
+                        : "Publish to Dailymotion"
+                    }
+                  >
+                    {publishToDailymotionMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    Publish to Dailymotion
+                  </button>
+                )}
+              </div>
+
+              {dailymotionStatusLoading && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Checking Dailymotion status...
+                </p>
               )}
             </div>
           </div>

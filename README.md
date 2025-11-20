@@ -153,11 +153,12 @@ The AI creates **professional-quality videos** featuring:
 - 📊 **Real-time Tracking**: Live progress monitoring and status updates
 - 🎨 **Quality Control**: Professional prompting ensures brand-safe results
 
-## �🚀 Features
+## 🚀 Features
 
 - 🔗 **URL Scraping**: Extract product information from e-commerce websites
 - 🤖 **AI Video Generation**: Convert product images to engaging videos using Kling AI
-- 📊 **Real-time Status Tracking**: Monitor video generation progress (unavailable → processing → finish/error)
+- 📺 **Dailymotion Publishing**: Automatically publish generated videos to Dailymotion
+- 📊 **Real-time Status Tracking**: Monitor video generation and publishing progress
 - 🎨 **Modern UI**: Clean, responsive interface with horizontal card layout
 - 💾 **Database Storage**: Persistent storage with SQLite and Drizzle ORM
 - ⚡ **Fast Development**: Built with Bun runtime and Vite bundler
@@ -196,6 +197,8 @@ curl -fsSL https://bun.sh/install | bash
 
 2. **Kling AI Account**: Sign up at [Kling AI](https://klingai.com) to get API credentials
 
+3. **Dailymotion Developer Account**: Create a developer account at [Dailymotion Developers](https://developers.dailymotion.com) to get API credentials
+
 ## ⚙️ Installation & Setup
 
 1. **Clone the repository**:
@@ -221,6 +224,11 @@ KLING_AI_SECRET_KEY=your_secret_key_here
 
 # Database (optional, uses SQLite by default)
 DATABASE_URL=file:./local.db
+
+# Dailymotion API Credentials
+DAILYMOTION_CLIENT_ID=your_client_id_here
+DAILYMOTION_CLIENT_SECRET=your_client_secret_here
+DAILYMOTION_USER_ID=your_user_id_here
 ```
 
 4. **Database Setup**:
@@ -272,12 +280,21 @@ The application will be available at:
 5. **Wait 5-10 minutes** for the AI to create your video
 6. **See the status change** to "Video Ready" with a green checkmark
 
-### **Step 4: Viewing and Using Your Videos**
+### **Step 4: Publishing to Dailymotion**
 
-1. **Click the "Watch Video" button** when it appears (purple button)
-2. **The video opens** in a new tab/window
-3. **Right-click the video** to save it to your computer
-4. **Use the video** on your website, social media, or marketing materials
+1. **Ensure you have a finished video** (green "Video Ready" status)
+2. **Look for the orange "Publish to Dailymotion" button** below the video section
+3. **Click the "Publish to Dailymotion" button**
+4. **Watch the status change** to "Publishing to Dailymotion" (orange with spinner)
+5. **Wait 10-30 seconds** for the video to be uploaded and processed
+6. **See the status change** to "Published" with "Watch on Dailymotion" button
+
+### **Step 5: Managing Your Content**
+
+1. **Watch Videos**: Click "Watch Video" (purple) for AI-generated content
+2. **View on Dailymotion**: Click "Watch on Dailymotion" (orange) to see published content
+3. **Delete Products**: Click "Delete" button to remove unwanted products
+4. **View Original**: Click "View" to go back to the original product page
 
 ### **What You'll See on Screen**
 
@@ -298,14 +315,28 @@ The application will be available at:
 - ✅ **Green "Video Ready"**: Video completed successfully
 - ❌ **Red "Error"**: Something went wrong (try again)
 
-#### **Video Generation Timeline**
+**Dailymotion Status:**
+
+- 🟠 **Orange "Publish to Dailymotion"**: Ready to publish (requires finished video)
+- 🔄 **Blue "Publishing to Dailymotion"**: Upload in progress
+- ✅ **Green "Published"**: Available on Dailymotion
+- ❌ **Red "Error"**: Publishing failed (try again)
+
+#### **Complete Workflow Timeline**
 
 ```
-⏰ Immediate: Button click → Status changes to "Processing"
-⏰ 2-3 minutes: AI analyzes the product image
-⏰ 5-8 minutes: AI generates video effects and movements
-⏰ 8-10 minutes: Video rendering and quality optimization
-⏰ Complete: "Watch Video" button appears
+⏰ Step 1: URL Submission (Immediate)
+└── Product data extracted and displayed
+
+⏰ Step 2: Video Generation (5-10 minutes)
+├── 2-3 minutes: AI analyzes the product image
+├── 5-8 minutes: AI generates video effects and movements
+└── 8-10 minutes: Video rendering and quality optimization
+
+⏰ Step 3: Dailymotion Publishing (10-30 seconds)
+├── 5-10 seconds: Video upload to Dailymotion
+├── 10-20 seconds: Video processing on Dailymotion
+└── Complete: "Watch on Dailymotion" button appears
 ```
 
 ### **Tips for Best Results**

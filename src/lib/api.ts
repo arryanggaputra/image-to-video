@@ -22,6 +22,9 @@ export interface Product {
   videoStatus: "unavailable" | "processing" | "finish" | "error";
   videoUrl?: string | null;
   videoTaskId?: string | null;
+  dailymotionId?: string | null;
+  dailymotionStatus: "not_published" | "publishing" | "published" | "error";
+  dailymotionUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -196,6 +199,34 @@ class ApiClient {
 
   async getDomainVideos(domainId: number): Promise<Product[]> {
     return this.request<Product[]>(`/videos/domain/${domainId}`);
+  }
+
+  // Dailymotion publishing methods
+  async publishToDailymotion(
+    productId: number
+  ): Promise<{ id: string; status: string; message: string }> {
+    return this.request<{ id: string; status: string; message: string }>(
+      `/dailymotion/publish/${productId}`,
+      {
+        method: "POST",
+      }
+    );
+  }
+
+  async getDailymotionStatus(productId: number): Promise<{
+    dailymotionStatus: "not_published" | "publishing" | "published" | "error";
+    dailymotionUrl?: string | null;
+    dailymotionId?: string | null;
+    statusMessage?: string;
+    error?: string;
+  }> {
+    return this.request<{
+      dailymotionStatus: "not_published" | "publishing" | "published" | "error";
+      dailymotionUrl?: string | null;
+      dailymotionId?: string | null;
+      statusMessage?: string;
+      error?: string;
+    }>(`/dailymotion/status/${productId}`);
   }
 }
 
