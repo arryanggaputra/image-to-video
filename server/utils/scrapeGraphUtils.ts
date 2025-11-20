@@ -94,20 +94,38 @@ export class ScrapeGraphUtils {
       return [];
     }
 
-    return products.filter((product: ScrapedProduct) => {
-      // Validate that required fields exist
-      const isValid =
-        product.title &&
-        product.description &&
-        product.url &&
-        Array.isArray(product.image);
+    return products
+      .filter((product: any) => {
+        // Check for both field naming conventions (title vs product_title)
+        const title = product.title || product.product_title;
+        const url = product.url || product.product_url;
+        const image = product.image || product.product_image;
 
-      if (!isValid) {
-        console.warn("Invalid product data found:", product);
-      }
+        // Validate that required fields exist (description can be empty)
+        const isValid =
+          title && url && Array.isArray(image) && image.length > 0;
 
-      return isValid;
-    });
+        if (!isValid) {
+          console.warn("Invalid product data found:", product);
+        }
+
+        return isValid;
+      })
+      .map((product: any): ScrapedProduct => {
+        // Normalize field names and use title as fallback for empty description
+        const title = product.title || product.product_title;
+        const description =
+          product.description || product.product_description || title;
+        const url = product.url || product.product_url;
+        const image = product.image || product.product_image;
+
+        return {
+          title,
+          description,
+          url,
+          image,
+        };
+      });
   }
 
   /**
