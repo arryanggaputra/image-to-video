@@ -96,3 +96,22 @@ export function useVideoStatusQuery(
     },
   });
 }
+
+export function useDeleteProductMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (productId: number) => apiClient.deleteProduct(productId),
+    onSuccess: () => {
+      // Invalidate products list to remove deleted item
+      queryClient.invalidateQueries({ queryKey: queryKeys.products });
+      // Also invalidate domains to update product counts
+      queryClient.invalidateQueries({ queryKey: queryKeys.domains });
+      // Invalidate domain-with-products queries to refetch product lists
+      queryClient.invalidateQueries({
+        queryKey: ["domain-with-products"],
+        exact: false,
+      });
+    },
+  });
+}

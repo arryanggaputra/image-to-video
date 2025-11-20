@@ -7,9 +7,14 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
+  Trash2,
 } from "lucide-react";
 import { Product } from "../lib/api";
-import { useGenerateVideoMutation, useVideoStatusQuery } from "../lib/queries";
+import {
+  useGenerateVideoMutation,
+  useVideoStatusQuery,
+  useDeleteProductMutation,
+} from "../lib/queries";
 
 interface ProductCardProps {
   product: Product;
@@ -17,8 +22,10 @@ interface ProductCardProps {
 
 function ProductCard({ product }: ProductCardProps) {
   const [showVideoStatus, setShowVideoStatus] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const generateVideoMutation = useGenerateVideoMutation();
+  const deleteProductMutation = useDeleteProductMutation();
 
   // Only query video status if we're showing it or if video is processing
   const { data: videoStatus, isLoading: statusLoading } = useVideoStatusQuery(
@@ -46,6 +53,15 @@ function ProductCard({ product }: ProductCardProps) {
       setShowVideoStatus(true);
     } catch (error) {
       console.error("Failed to generate video:", error);
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    try {
+      await deleteProductMutation.mutateAsync(product.id);
+      setShowDeleteConfirm(false);
+    } catch (error) {
+      console.error("Failed to delete product:", error);
     }
   };
 
@@ -232,15 +248,50 @@ function ProductCard({ product }: ProductCardProps) {
             <span className="text-xs text-gray-500">
               {formatTime(product.createdAt)}
             </span>
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-            >
-              <ExternalLink className="w-3 h-3" />
-              View
-            </a>
+            <div className="flex items-center gap-2">
+              {!showDeleteConfirm ? (
+                <>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={deleteProductMutation.isPending}
+                    className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 text-sm font-medium transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Delete
+                  </button>
+                  <a
+                    href={product.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    View
+                  </a>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deleteProductMutation.isPending}
+                    className="text-xs px-2 py-1 text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteProduct}
+                    disabled={deleteProductMutation.isPending}
+                    className="text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                  >
+                    {deleteProductMutation.isPending ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      "Confirm"
+                    )}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
