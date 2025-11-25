@@ -1,0 +1,35 @@
+www.sample.com {
+    # Serve static files for frontend
+    root * /home/ubuntu/image-to-video/dist
+    
+    # Handle API requests
+    handle /api/* {
+        reverse_proxy localhost:8000
+    }
+    
+    # Handle all other requests with frontend
+    handle {
+        try_files {path} /index.html
+    }
+    
+    # Enable gzip compression
+    encode gzip
+    
+    # Security headers
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+    
+    # Enable automatic HTTPS
+    tls {
+        protocols tls1.2 tls1.3
+    }
+}
+
+# Redirect non-www to www
+sample.com {
+    redir https://www.sample.com{uri} permanent
+}

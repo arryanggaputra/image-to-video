@@ -1,7 +1,12 @@
 import { Context } from "hono";
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { products, insertProductSchema, type NewProduct } from "../schema";
+import {
+  products,
+  insertProductSchema,
+  updateProductSchema,
+  type NewProduct,
+} from "../schema";
 
 export class ProductsController {
   // GET /api/products - Get all products
@@ -188,7 +193,7 @@ export class ProductsController {
       }
 
       const body = await c.req.json();
-      const parsed = insertProductSchema.partial().safeParse(body);
+      const parsed = updateProductSchema.safeParse(body);
 
       if (!parsed.success) {
         return c.json(

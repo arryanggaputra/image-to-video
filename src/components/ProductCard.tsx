@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ExternalLink,
   Image,
@@ -9,6 +10,7 @@ import {
   XCircle,
   Trash2,
   Upload,
+  Edit3,
 } from "lucide-react";
 import { Product } from "../lib/api";
 import {
@@ -138,7 +140,7 @@ function ProductCard({ product }: ProductCardProps) {
       <div className="flex">
         {/* Product Image - Left Side */}
         {product.images && product.images.length > 0 && (
-          <div className="w-48 h-48 bg-gray-100 relative flex items-center justify-center shrink-0">
+          <div className="w-40 h-40 bg-gray-100 relative flex items-center justify-center shrink-0">
             <img
               src={product.images[0]}
               alt={product.title}
@@ -184,7 +186,6 @@ function ProductCard({ product }: ProductCardProps) {
               {product.description}
             </p>
 
-            {/* Additional Images */}
             {product.images.length > 1 && (
               <div className="flex gap-1 mb-3 overflow-x-auto">
                 {product.images.slice(1, 4).map((image, index) => (
@@ -376,6 +377,13 @@ function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center gap-2">
               {!showDeleteConfirm ? (
                 <>
+                  <Link
+                    to={`/product/${product.id}/edit`}
+                    className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    Edit
+                  </Link>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={deleteProductMutation.isPending}

@@ -88,6 +88,10 @@ export const insertProductSchema = createInsertSchema(products, {
     .nullable(),
 });
 
+export const updateProductSchema = insertProductSchema.partial().extend({
+  images: z.array(z.string().url("Invalid image URL")).optional(),
+});
+
 export const selectProductSchema = createSelectSchema(products);
 
 export type Product = z.infer<typeof selectProductSchema>;

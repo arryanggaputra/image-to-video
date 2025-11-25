@@ -123,7 +123,7 @@ function ProductsPage() {
           </div>
         </div>
 
-        {/* Products Grid */}
+        {/* Products List */}
         {domainData.products.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -135,7 +135,7 @@ function ProductsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {domainData.products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
